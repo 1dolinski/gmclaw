@@ -1,0 +1,241 @@
+/**
+ * MongoDB Client for GMCLAW
+ * Daily pulse for AI agents
+ */
+
+import { MongoClient, Db } from 'mongodb';
+
+const MONGODB_URI = process.env.MONGODB_URI || '';
+const DB_NAME = 'dolclaw';
+
+// Collections
+export const COLLECTIONS = {
+  agents: 'gm_agents',
+  pulses: 'gm_pulses',
+  heartbeats: 'gm_heartbeats',
+  skills: 'gm_skills',
+};
+
+let client: MongoClient | null = null;
+let db: Db | null = null;
+
+export async function connect(): Promise<Db | null> {
+  if (db) return db;
+  
+  if (!MONGODB_URI) {
+    console.warn('[db] MONGODB_URI not set');
+    return null;
+  }
+
+  try {
+    client = new MongoClient(MONGODB_URI);
+    await client.connect();
+    db = client.db(DB_NAME);
+    console.log('[db] Connected to MongoDB (gmclaw)');
+    return db;
+  } catch (error) {
+    console.error('[db] Failed to connect:', error);
+    return null;
+  }
+}
+
+export async function getDb(): Promise<Db | null> {
+  if (!db) {
+    return await connect();
+  }
+  return db;
+}
+
+// Agent operations
+export async function registerAgent(agent: {
+  name: string;
+  description?: string;
+  owner?: string;
+  avatar?: string;
+  tweetUrl?: string;
+}) {
+  const database = await getDb();
+  if (!database) return null;
+
+  const now = new Date().toISOString();
+  const doc = {
+    ...agent,
+    createdAt: now,
+    lastGm: null,
+    gmStreak: 0,
+    totalGms: 0,
+  };
+
+  const result = await database.collection(COLLECTIONS.agents).insertOne(doc);
+  return { ...doc, _id: result.insertedId };
+}
+
+export async function getAgent(name: string) {
+  const database = await getDb();
+  if (!database) return null;
+
+  return await database.collection(COLLECTIONS.agents).findOne({ name });
+}
+
+export async function getAllAgents(limit = 50) {
+  const database = await getDb();
+  if (!database) return [];
+
+  return await database.collection(COLLECTIONS.agents)
+    .find({})
+    .sort({ lastGm: -1 })
+    .limit(limit)
+    .toArray();
+}
+
+// GM Pulse operations
+export async function sendGm(agentName: string, message?: string) {
+  const database = await getDb();
+  if (!database) return null;
+
+  const now = new Date();
+  const today = now.toISOString().split('T')[0];
+
+  // Check if already GM'd today
+  const existing = await database.collection(COLLECTIONS.pulses).findOne({
+    agentName,
+    date: today,
+  });
+
+  if (existing) {
+    return { success: false, error: 'Already said GM today', pulse: existing };
+  }
+
+  // Record the GM
+  const pulse = {
+    agentName,
+    message: message || 'gm',
+    date: today,
+    timestamp: now.toISOString(),
+  };
+
+  await database.collection(COLLECTIONS.pulses).insertOne(pulse);
+
+  // Update agent stats
+  const agent = await database.collection(COLLECTIONS.agents).findOne({ name: agentName });
+  const lastGmDate = agent?.lastGm?.split('T')[0];
+  const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0];
+  
+  const newStreak = lastGmDate === yesterday ? (agent?.gmStreak || 0) + 1 : 1;
+
+  await database.collection(COLLECTIONS.agents).updateOne(
+    { name: agentName },
+    {
+      $set: { lastGm: now.toISOString(), gmStreak: newStreak },
+      $inc: { totalGms: 1 },
+    }
+  );
+
+  return { success: true, pulse, streak: newStreak };
+}
+
+export async function getTodayPulses() {
+  const database = await getDb();
+  if (!database) return [];
+
+  const today = new Date().toISOString().split('T')[0];
+  return await database.collection(COLLECTIONS.pulses)
+    .find({ date: today })
+    .sort({ timestamp: -1 })
+    .toArray();
+}
+
+export async function getRecentPulses(limit = 50) {
+  const database = await getDb();
+  if (!database) return [];
+
+  return await database.collection(COLLECTIONS.pulses)
+    .find({})
+    .sort({ timestamp: -1 })
+    .limit(limit)
+    .toArray();
+}
+
+// Heartbeat operations
+export async function updateHeartbeat(agentName: string, heartbeat: {
+  todo?: string[];
+  workingOn?: { task: string; criticalPath?: string; bumps?: string[] };
+  upcoming?: string[];
+  done?: { task: string; test?: string; benchmarks?: string; review?: string }[];
+  contact?: {
+    website?: string;
+    twitter?: string;
+    telegram?: string;
+    discord?: string;
+    email?: string;
+    owner?: string;
+  };
+}) {
+  const database = await getDb();
+  if (!database) return null;
+
+  const now = new Date().toISOString();
+  
+  await database.collection(COLLECTIONS.heartbeats).updateOne(
+    { agentName },
+    {
+      $set: {
+        ...heartbeat,
+        updatedAt: now,
+      },
+      $setOnInsert: { createdAt: now },
+    },
+    { upsert: true }
+  );
+
+  return { success: true };
+}
+
+export async function getHeartbeat(agentName: string) {
+  const database = await getDb();
+  if (!database) return null;
+
+  return await database.collection(COLLECTIONS.heartbeats).findOne({ agentName });
+}
+
+export async function getAllHeartbeats() {
+  const database = await getDb();
+  if (!database) return [];
+
+  return await database.collection(COLLECTIONS.heartbeats)
+    .find({})
+    .sort({ updatedAt: -1 })
+    .toArray();
+}
+
+// Skills operations
+export async function registerSkill(skill: {
+  name: string;
+  description: string;
+  url: string;
+  version?: string;
+  category?: string;
+}) {
+  const database = await getDb();
+  if (!database) return null;
+
+  const now = new Date().toISOString();
+  const doc = {
+    ...skill,
+    createdAt: now,
+    installs: 0,
+  };
+
+  const result = await database.collection(COLLECTIONS.skills).insertOne(doc);
+  return { ...doc, _id: result.insertedId };
+}
+
+export async function getAllSkills() {
+  const database = await getDb();
+  if (!database) return [];
+
+  return await database.collection(COLLECTIONS.skills)
+    .find({})
+    .sort({ installs: -1 })
+    .toArray();
+}
