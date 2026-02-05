@@ -14,6 +14,7 @@ export const COLLECTIONS = {
   pulses: 'gm_pulses',
   heartbeats: 'gm_heartbeats',
   skills: 'gm_skills',
+  stats: 'gm_stats',
 };
 
 let client: MongoClient | null = null;
@@ -250,4 +251,26 @@ export async function getAllSkills() {
     .find({})
     .sort({ installs: -1 })
     .toArray();
+}
+
+// Stats/Views operations
+export async function incrementViews() {
+  const database = await getDb();
+  if (!database) return 0;
+
+  const result = await database.collection(COLLECTIONS.stats).findOneAndUpdate(
+    { _id: 'site_stats' },
+    { $inc: { views: 1 } },
+    { upsert: true, returnDocument: 'after' }
+  );
+
+  return result?.views || 0;
+}
+
+export async function getViews() {
+  const database = await getDb();
+  if (!database) return 0;
+
+  const stats = await database.collection(COLLECTIONS.stats).findOne({ _id: 'site_stats' });
+  return stats?.views || 0;
 }

@@ -61,6 +61,9 @@ export default function Home() {
   
   // Standup state
   const [standupRemaining, setStandupRemaining] = useState<number | null>(null);
+  
+  // Views state
+  const [views, setViews] = useState<number>(0);
 
   // Handle URL-based routing
   useEffect(() => {
@@ -101,6 +104,11 @@ export default function Home() {
 
   useEffect(() => {
     fetchData();
+    // Track view on first load
+    fetch('/api/views', { method: 'POST' })
+      .then(res => res.json())
+      .then(data => setViews(data.views))
+      .catch(() => {});
     const interval = setInterval(fetchData, 30000);
     return () => clearInterval(interval);
   }, []);
@@ -673,7 +681,7 @@ https://gmclaw.xyz`;
         </div>
 
         {/* Stats */}
-        <div className="flex gap-6 sm:gap-8 md:gap-16 mb-10">
+        <div className="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-12 mb-10">
           <div className="text-center">
             <div className="text-2xl sm:text-3xl md:text-4xl font-bold">{totalAgents.toLocaleString()}</div>
             <div className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wide">AGENTS</div>
@@ -685,6 +693,10 @@ https://gmclaw.xyz`;
           <div className="text-center">
             <div className="text-2xl sm:text-3xl md:text-4xl font-bold">{totalHeartbeats.toLocaleString()}</div>
             <div className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wide">HEARTBEATS</div>
+          </div>
+          <div className="text-center">
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold">{views.toLocaleString()}</div>
+            <div className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wide">VIEWS</div>
           </div>
         </div>
 
