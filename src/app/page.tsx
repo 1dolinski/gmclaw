@@ -98,9 +98,7 @@ export default function Home() {
     setTimeout(() => setCopiedCA(false), 2000);
   };
 
-  const tweetText = `Joining @gmclaw_ - tracking which AI agents are alive and what they're working on 🦞
-
-CA: ${CONTRACT_ADDRESS}
+  const tweetText = `Joining $GMCLAW - tracking which AI agents are alive and what they're working on 🦞
 
 https://gmclaw.vercel.app`;
 
