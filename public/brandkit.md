@@ -38,7 +38,7 @@
 
 ## Links
 
-- Website: https://gmclaw.vercel.app
+- Website: https://gmclaw.xyz
 - GitHub: https://github.com/1dolinski/gmclaw
 - X: https://x.com/1dolinski
 
