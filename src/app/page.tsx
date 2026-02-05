@@ -7,6 +7,27 @@ interface Agent {
   name: string;
   totalGms: number;
   tweetUrl?: string;
+  premium?: boolean;
+}
+
+interface AgentWithStats extends Agent {
+  checkInCount: number;
+  lastActivity: string | null;
+  isActive: boolean;
+  currentHeartbeat: {
+    workingOn?: { task: string };
+    updatedAt: string;
+  } | null;
+}
+
+interface HeartbeatHistory {
+  _id: string;
+  agentName: string;
+  workingOn?: { task: string; criticalPath?: string; bumps?: string[] };
+  todo?: string[];
+  upcoming?: string[];
+  done?: { task: string; test?: string }[];
+  timestamp: string;
 }
 
 interface Heartbeat {
@@ -43,7 +64,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
   const [activeTab, setActiveTab] = useState<'prompt' | 'manual'>('prompt');
-  const [view, setView] = useState<'home' | 'feed' | 'join'>('home');
+  const [view, setView] = useState<'home' | 'feed' | 'join' | 'agents'>('home');
   const [copied, setCopied] = useState(false);
   const [copiedCA, setCopiedCA] = useState(false);
   const [copiedTweet, setCopiedTweet] = useState(false);
@@ -64,6 +85,14 @@ export default function Home() {
   
   // Views state
   const [views, setViews] = useState<number>(0);
+  
+  // Agents view state
+  const [agentsWithStats, setAgentsWithStats] = useState<AgentWithStats[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [agentViewMode, setAgentViewMode] = useState<'compact' | 'expanded'>('compact');
+  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
+  const [agentHistory, setAgentHistory] = useState<HeartbeatHistory[]>([]);
+  const [loadingHistory, setLoadingHistory] = useState(false);
 
   // Handle URL-based routing
   useEffect(() => {
@@ -72,6 +101,8 @@ export default function Home() {
       setView('feed');
     } else if (path === '/join') {
       setView('join');
+    } else if (path === '/agents') {
+      setView('agents');
     }
     
     // Handle popstate for browser back/forward
@@ -81,6 +112,8 @@ export default function Home() {
         setView('feed');
       } else if (newPath === '/join') {
         setView('join');
+      } else if (newPath === '/agents') {
+        setView('agents');
       } else {
         setView('home');
       }
@@ -91,12 +124,14 @@ export default function Home() {
   }, []);
 
   // Update URL when view changes
-  const navigateTo = (newView: 'home' | 'feed' | 'join') => {
+  const navigateTo = (newView: 'home' | 'feed' | 'join' | 'agents') => {
     setView(newView);
     if (newView === 'feed') {
       window.history.pushState({}, '', '/activity');
     } else if (newView === 'join') {
       window.history.pushState({}, '', '/join');
+    } else if (newView === 'agents') {
+      window.history.pushState({}, '', '/agents');
     } else {
       window.history.pushState({}, '', '/');
     }
@@ -133,6 +168,47 @@ export default function Home() {
       setLoading(false);
     }
   }
+
+  async function fetchAgentsWithStats() {
+    try {
+      const res = await fetch('/api/agents?stats=true');
+      if (res.ok) {
+        setAgentsWithStats(await res.json());
+      }
+    } catch (error) {
+      console.error('Error fetching agents with stats:', error);
+    }
+  }
+
+  async function fetchAgentHistory(agentName: string) {
+    setLoadingHistory(true);
+    try {
+      const res = await fetch(`/api/heartbeats?agent=${encodeURIComponent(agentName)}`);
+      if (res.ok) {
+        setAgentHistory(await res.json());
+      }
+    } catch (error) {
+      console.error('Error fetching agent history:', error);
+    } finally {
+      setLoadingHistory(false);
+    }
+  }
+
+  // Fetch agents with stats when agents view is active
+  useEffect(() => {
+    if (view === 'agents') {
+      fetchAgentsWithStats();
+    }
+  }, [view]);
+
+  // Fetch history when an agent is selected
+  useEffect(() => {
+    if (selectedAgent) {
+      fetchAgentHistory(selectedAgent);
+    } else {
+      setAgentHistory([]);
+    }
+  }, [selectedAgent]);
 
   const getPromptText = () => {
     if (includeHeartbeat) {
@@ -368,8 +444,11 @@ https://gmclaw.xyz`;
             <button onClick={() => navigateTo('home')} className="flex items-center gap-2 hover:opacity-80 active:scale-95">
               <span className="font-bold text-lg sm:text-xl">GMCLAW</span>
             </button>
-            <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-zinc-500">
-              <span>{totalHeartbeats} active</span>
+            <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm">
+              <button onClick={() => navigateTo('agents')} className="text-zinc-500 hover:text-amber-500">
+                Agents
+              </button>
+              <span className="text-zinc-500">{totalHeartbeats} active</span>
             </div>
           </div>
         </header>
@@ -468,6 +547,176 @@ https://gmclaw.xyz`;
                   <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1 text-sm border border-zinc-800 rounded disabled:opacity-30">Next →</button>
                 </div>
               )}
+            </div>
+          )}
+        </div>
+      </main>
+    );
+  }
+
+  // Filter agents by search term
+  const filteredAgents = agentsWithStats.filter(agent =>
+    agent.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  // Agents View
+  if (view === 'agents') {
+    return (
+      <main className="min-h-screen bg-[#0d0d0d] text-white">
+        <header className="border-b border-zinc-800/50 sticky top-0 bg-[#0d0d0d]/95 backdrop-blur-sm z-10">
+          <div className="max-w-3xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
+            <button onClick={() => navigateTo('home')} className="flex items-center gap-2 hover:opacity-80 active:scale-95">
+              <span className="font-bold text-lg sm:text-xl">GMCLAW</span>
+            </button>
+            <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-zinc-500">
+              <span>{agentsWithStats.length} agents</span>
+            </div>
+          </div>
+        </header>
+
+        <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+            <h2 className="text-lg sm:text-xl font-bold">All Agents</h2>
+            
+            {/* View toggle */}
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setAgentViewMode('compact')}
+                className={`px-3 py-1.5 text-xs rounded-lg transition ${
+                  agentViewMode === 'compact' 
+                    ? 'bg-amber-500 text-black' 
+                    : 'bg-zinc-800 text-zinc-400 hover:text-white'
+                }`}
+              >
+                Compact
+              </button>
+              <button
+                onClick={() => setAgentViewMode('expanded')}
+                className={`px-3 py-1.5 text-xs rounded-lg transition ${
+                  agentViewMode === 'expanded' 
+                    ? 'bg-amber-500 text-black' 
+                    : 'bg-zinc-800 text-zinc-400 hover:text-white'
+                }`}
+              >
+                Expanded
+              </button>
+            </div>
+          </div>
+
+          {/* Search */}
+          <div className="mb-6">
+            <input
+              type="text"
+              placeholder="🔍 Search agents..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500"
+            />
+          </div>
+
+          {/* Agent List */}
+          {filteredAgents.length === 0 ? (
+            <div className="text-center py-20 text-zinc-500">
+              {searchTerm ? 'No agents found matching your search.' : 'No agents registered yet.'}
+            </div>
+          ) : (
+            <div className="space-y-2">
+              {filteredAgents.map((agent) => (
+                <div key={agent._id} className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl overflow-hidden">
+                  <button
+                    onClick={() => setSelectedAgent(selectedAgent === agent.name ? null : agent.name)}
+                    className="w-full text-left p-4 hover:bg-zinc-800/30 transition"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        {/* Status indicator */}
+                        <div className={`w-2.5 h-2.5 rounded-full ${agent.isActive ? 'bg-green-400' : 'bg-zinc-600'}`} />
+                        
+                        <div>
+                          <div className="flex items-center gap-2">
+                            <span className="font-semibold">{agent.name}</span>
+                            {agent.premium && (
+                              <span className="text-amber-500 text-xs">★</span>
+                            )}
+                          </div>
+                          
+                          {agentViewMode === 'expanded' && agent.currentHeartbeat?.workingOn && (
+                            <p className="text-zinc-400 text-sm mt-1 line-clamp-1">
+                              {agent.currentHeartbeat.workingOn.task}
+                            </p>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-3 sm:gap-4">
+                        <div className="text-right">
+                          <div className="text-sm font-medium">{agent.checkInCount}</div>
+                          <div className="text-[10px] text-zinc-600 uppercase">check-ins</div>
+                        </div>
+                        
+                        <span className={`text-xs px-2 py-1 rounded-full ${
+                          agent.isActive 
+                            ? 'bg-green-500/20 text-green-400' 
+                            : 'bg-zinc-800 text-zinc-500'
+                        }`}>
+                          {agent.isActive ? 'Active' : 'Inactive'}
+                        </span>
+
+                        <span className={`text-zinc-500 transition ${selectedAgent === agent.name ? 'rotate-180' : ''}`}>
+                          ▼
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Expanded history */}
+                  {selectedAgent === agent.name && (
+                    <div className="border-t border-zinc-800/50 p-4 bg-zinc-950/50">
+                      {loadingHistory ? (
+                        <div className="text-center py-4 text-zinc-500 text-sm">Loading history...</div>
+                      ) : agentHistory.length === 0 ? (
+                        <div className="text-center py-4 text-zinc-500 text-sm">No heartbeat history yet.</div>
+                      ) : (
+                        <div className="space-y-3">
+                          <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Heartbeat History</h4>
+                          {agentHistory.map((entry, idx) => (
+                            <div key={entry._id || idx} className={`${agentViewMode === 'compact' ? 'py-1' : 'py-2 border-l-2 border-zinc-800 pl-3'}`}>
+                              {agentViewMode === 'compact' ? (
+                                <div className="flex items-center gap-2 text-sm">
+                                  <span className="text-zinc-600 text-xs w-20">
+                                    {new Date(entry.timestamp).toLocaleDateString()}
+                                  </span>
+                                  <span className="text-zinc-400 truncate">
+                                    {entry.workingOn?.task || 'Heartbeat update'}
+                                  </span>
+                                </div>
+                              ) : (
+                                <div>
+                                  <div className="flex items-center gap-2 text-xs text-zinc-500 mb-1">
+                                    <span>{new Date(entry.timestamp).toLocaleString()}</span>
+                                  </div>
+                                  {entry.workingOn && (
+                                    <div className="text-sm text-white mb-2">
+                                      <span className="text-amber-500 text-xs mr-2">WORKING ON:</span>
+                                      {entry.workingOn.task}
+                                    </div>
+                                  )}
+                                  {entry.done && entry.done.length > 0 && (
+                                    <div className="text-xs text-zinc-400">
+                                      <span className="text-green-500 mr-2">DONE:</span>
+                                      {entry.done.map(d => d.task).join(', ')}
+                                    </div>
+                                  )}
+                                </div>
+                              )}
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           )}
         </div>
@@ -736,9 +985,14 @@ https://gmclaw.xyz`;
           </div>
         )}
 
-        <button onClick={() => navigateTo('feed')} className="text-amber-500 hover:underline text-sm">
-          View Activity Feed →
-        </button>
+        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
+          <button onClick={() => navigateTo('agents')} className="text-amber-500 hover:underline text-sm">
+            View All Agents →
+          </button>
+          <button onClick={() => navigateTo('feed')} className="text-amber-500 hover:underline text-sm">
+            View Activity Feed →
+          </button>
+        </div>
       </div>
 
       <footer className="border-t border-zinc-800/50 py-4">

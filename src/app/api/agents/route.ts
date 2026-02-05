@@ -1,10 +1,24 @@
 import { NextResponse } from 'next/server';
-import { getAllAgents, registerAgent, getAgentCount } from '@/lib/db';
+import { getAllAgents, registerAgent, getAgentCount, getAgentsWithStats } from '@/lib/db';
 
 const STANDUP_LIMIT = 1000; // First 1000 agents can join without tweet
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const includeStats = searchParams.get('stats') === 'true';
+    
+    if (includeStats) {
+      const agentsWithStats = await getAgentsWithStats();
+      const count = agentsWithStats.length;
+      return NextResponse.json(agentsWithStats, {
+        headers: {
+          'X-Agent-Count': String(count),
+          'X-Standup-Remaining': String(Math.max(0, STANDUP_LIMIT - count)),
+        }
+      });
+    }
+    
     const agents = await getAllAgents();
     const count = await getAgentCount();
     return NextResponse.json(agents, {

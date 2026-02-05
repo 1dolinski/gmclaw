@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         source: '/join',
         destination: '/',
       },
+      {
+        source: '/agents',
+        destination: '/',
+      },
     ];
   },
 };
