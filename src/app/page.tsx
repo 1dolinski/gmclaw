@@ -391,11 +391,11 @@ https://gmclaw.vercel.app`;
   return (
     <main className="min-h-screen bg-[#0d0d0d] text-white flex flex-col">
       {/* Hero Banner */}
-      <div className="w-full">
+      <div className="w-full bg-[#f5a623]">
         <img 
           src="https://i.imgur.com/OH54S2c.png" 
           alt="GMCLAW Banner" 
-          className="w-full h-24 sm:h-32 md:h-40 object-cover object-top"
+          className="w-full h-auto max-h-48 sm:max-h-56 md:max-h-64 object-contain"
         />
       </div>
 
