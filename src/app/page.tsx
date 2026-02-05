@@ -677,10 +677,10 @@ https://gmclaw.xyz`;
                       ) : agentHistory.length === 0 ? (
                         <div className="text-center py-4 text-zinc-500 text-sm">No heartbeat history yet.</div>
                       ) : (
-                        <div className="space-y-3">
+                        <div className="space-y-4">
                           <h4 className="text-xs text-zinc-500 uppercase tracking-wider mb-3">Heartbeat History</h4>
                           {agentHistory.map((entry, idx) => (
-                            <div key={entry._id || idx} className={`${agentViewMode === 'compact' ? 'py-1' : 'py-2 border-l-2 border-zinc-800 pl-3'}`}>
+                            <div key={entry._id || idx} className={`${agentViewMode === 'compact' ? 'py-1' : 'py-3 border-l-2 border-amber-500/30 pl-4 bg-zinc-900/30 rounded-r-lg'}`}>
                               {agentViewMode === 'compact' ? (
                                 <div className="flex items-center gap-2 text-sm">
                                   <span className="text-zinc-600 text-xs w-20">
@@ -691,20 +691,78 @@ https://gmclaw.xyz`;
                                   </span>
                                 </div>
                               ) : (
-                                <div>
-                                  <div className="flex items-center gap-2 text-xs text-zinc-500 mb-1">
-                                    <span>{new Date(entry.timestamp).toLocaleString()}</span>
+                                <div className="space-y-3">
+                                  <div className="flex items-center gap-2 text-xs text-zinc-500">
+                                    <span className="font-medium">{new Date(entry.timestamp).toLocaleString()}</span>
                                   </div>
+                                  
+                                  {/* Working On */}
                                   {entry.workingOn && (
-                                    <div className="text-sm text-white mb-2">
-                                      <span className="text-amber-500 text-xs mr-2">WORKING ON:</span>
-                                      {entry.workingOn.task}
+                                    <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                                      <div className="text-amber-500 text-xs font-semibold mb-1">WORKING ON</div>
+                                      <div className="text-white text-sm">{entry.workingOn.task}</div>
+                                      {entry.workingOn.criticalPath && (
+                                        <div className="text-zinc-400 text-xs mt-2">
+                                          <span className="text-zinc-500">Critical path:</span> {entry.workingOn.criticalPath}
+                                        </div>
+                                      )}
+                                      {entry.workingOn.bumps && entry.workingOn.bumps.length > 0 && (
+                                        <div className="text-red-400 text-xs mt-2">
+                                          <span className="text-red-500">Bumps:</span> {entry.workingOn.bumps.join(', ')}
+                                        </div>
+                                      )}
                                     </div>
                                   )}
+                                  
+                                  {/* Todo */}
+                                  {entry.todo && entry.todo.length > 0 && (
+                                    <div>
+                                      <div className="text-blue-400 text-xs font-semibold mb-1">TODO</div>
+                                      <ul className="text-zinc-300 text-sm space-y-1">
+                                        {entry.todo.map((item, i) => (
+                                          <li key={i} className="flex items-start gap-2">
+                                            <span className="text-zinc-600">•</span>
+                                            <span>{item}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Upcoming */}
+                                  {entry.upcoming && entry.upcoming.length > 0 && (
+                                    <div>
+                                      <div className="text-purple-400 text-xs font-semibold mb-1">UPCOMING</div>
+                                      <ul className="text-zinc-400 text-sm space-y-1">
+                                        {entry.upcoming.map((item, i) => (
+                                          <li key={i} className="flex items-start gap-2">
+                                            <span className="text-zinc-600">○</span>
+                                            <span>{item}</span>
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                  
+                                  {/* Done */}
                                   {entry.done && entry.done.length > 0 && (
-                                    <div className="text-xs text-zinc-400">
-                                      <span className="text-green-500 mr-2">DONE:</span>
-                                      {entry.done.map(d => d.task).join(', ')}
+                                    <div>
+                                      <div className="text-green-400 text-xs font-semibold mb-1">DONE</div>
+                                      <ul className="text-zinc-300 text-sm space-y-2">
+                                        {entry.done.map((item, i) => (
+                                          <li key={i} className="bg-green-500/5 border border-green-500/10 rounded p-2">
+                                            <div className="flex items-start gap-2">
+                                              <span className="text-green-500">✓</span>
+                                              <span>{item.task}</span>
+                                            </div>
+                                            {item.test && (
+                                              <div className="text-xs text-zinc-500 mt-1 ml-5">
+                                                Test: {item.test}
+                                              </div>
+                                            )}
+                                          </li>
+                                        ))}
+                                      </ul>
                                     </div>
                                   )}
                                 </div>
