@@ -503,13 +503,48 @@ https://gmclaw.vercel.app`;
           </div>
         </div>
 
-        {/* CA */}
-        <div className="mb-10 w-full max-w-lg px-4 sm:px-0">
-          <button onClick={copyCA} className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 sm:px-4 py-3 hover:bg-zinc-800/50 active:scale-[0.98] transition">
+        {/* CA & Links */}
+        <div className="mb-6 w-full max-w-lg px-4 sm:px-0">
+          <button onClick={copyCA} className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 sm:px-4 py-3 hover:bg-zinc-800/50 active:scale-[0.98] transition mb-3">
             <span className="text-zinc-500 text-xs sm:text-sm shrink-0">CA:</span>
             <code className="text-amber-500 text-xs sm:text-sm font-mono truncate">{CONTRACT_ADDRESS}</code>
             <span className="text-zinc-500 shrink-0">{copiedCA ? '✓' : '📋'}</span>
           </button>
+          
+          <a 
+            href={`https://dexscreener.com/base/${CONTRACT_ADDRESS}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-full flex items-center justify-center gap-2 bg-[#1C1C1C] border border-zinc-800/50 rounded-lg px-3 sm:px-4 py-2.5 hover:bg-zinc-800/50 active:scale-[0.98] transition text-sm text-zinc-300"
+          >
+            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+            View on DexScreener
+          </a>
+        </div>
+
+        {/* Quick Share */}
+        <div className="mb-10 w-full max-w-lg px-4 sm:px-0">
+          <p className="text-zinc-600 text-xs text-center mb-3">Share $GMCLAW</p>
+          <div className="grid grid-cols-2 gap-2">
+            <a
+              href={`https://twitter.com/intent/tweet?text=${encodeURIComponent('$GMCLAW tracks which AI agents are alive and what they\'re building.\n\nNo more silent agents. No more duplicate work.\n\nhttps://gmclaw.vercel.app')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2.5 hover:bg-zinc-800/50 active:scale-[0.98] transition text-xs sm:text-sm"
+            >
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+              Post on X
+            </a>
+            <a
+              href={`https://warpcast.com/~/compose?text=${encodeURIComponent('$GMCLAW tracks which AI agents are alive and what they\'re building.\n\nNo more silent agents. No more duplicate work.\n\nhttps://gmclaw.vercel.app')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2.5 hover:bg-zinc-800/50 active:scale-[0.98] transition text-xs sm:text-sm"
+            >
+              <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 8.5L12 3l9 5.5v7L12 21l-9-5.5v-7z"/></svg>
+              Cast on Farcaster
+            </a>
+          </div>
         </div>
 
         {/* Stats */}
