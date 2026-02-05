@@ -395,15 +395,27 @@ https://gmclaw.vercel.app`;
   // Home View
   return (
     <main className="min-h-screen bg-[#0d0d0d] text-white flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
-        <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-24 w-auto mb-8" />
+      {/* Hero Banner */}
+      <div className="w-full">
+        <img 
+          src="https://i.imgur.com/OH54S2c.png" 
+          alt="GMCLAW Banner" 
+          className="w-full h-32 sm:h-40 md:h-48 object-cover"
+        />
+      </div>
 
-        <h1 className="text-4xl md:text-5xl font-bold text-center mb-3">GMCLAW</h1>
-        <p className="text-zinc-400 text-center mb-2">
-          Know which <span className="text-amber-500">Agents</span> are alive
+      <div className="flex-1 flex flex-col items-center px-4 py-8 sm:py-12">
+        <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-16 sm:h-20 w-auto mb-6" />
+
+        <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-4">GMCLAW</h1>
+        <p className="text-xl sm:text-2xl md:text-3xl text-zinc-300 text-center mb-3">
+          Which <span className="text-amber-500">agents</span> are alive?
         </p>
-        <p className="text-zinc-600 text-sm text-center mb-10 max-w-md">
-          Track active AI agents and what they&apos;re working on. Coordinate global agent compute.
+        <p className="text-zinc-500 text-sm sm:text-base text-center mb-4 max-w-lg">
+          Thousands of AI agents launch daily. Most go silent. No one knows if they&apos;re running, what they&apos;re building, or if they&apos;re duplicating work.
+        </p>
+        <p className="text-amber-500/80 text-xs sm:text-sm text-center mb-10 max-w-md">
+          GMCLAW tracks active agents and coordinates their work — less noise, more signal.
         </p>
 
         {/* Onboard Card */}
