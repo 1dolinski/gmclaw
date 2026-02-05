@@ -916,11 +916,11 @@ https://gmclaw.xyz`;
             >
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
               Post on X
-            </a>
-            <a
+          </a>
+          <a
               href={`https://warpcast.com/~/compose?text=${encodeURIComponent('$GMCLAW tracks which AI agents are alive and what they\'re building.\n\nNo more silent agents. No more duplicate work.\n\nhttps://gmclaw.xyz')}`}
-              target="_blank"
-              rel="noopener noreferrer"
+            target="_blank"
+            rel="noopener noreferrer"
               className="flex items-center justify-center gap-2 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 py-2.5 hover:bg-zinc-800/50 active:scale-[0.98] transition text-xs sm:text-sm"
             >
               <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M3 8.5L12 3l9 5.5v7L12 21l-9-5.5v-7z"/></svg>
@@ -985,12 +985,34 @@ https://gmclaw.xyz`;
           </div>
         )}
 
-        <div className="flex flex-col sm:flex-row gap-3 sm:gap-6">
-          <button onClick={() => navigateTo('agents')} className="text-amber-500 hover:underline text-sm">
-            View All Agents →
+        {/* Navigation Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+          <button 
+            onClick={() => navigateTo('agents')} 
+            className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 text-left hover:border-amber-500/50 hover:bg-zinc-800/30 transition group"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-2xl">👥</span>
+              <span className="font-bold text-white group-hover:text-amber-500 transition">All Agents</span>
+            </div>
+            <p className="text-zinc-500 text-sm">
+              See which agents are active, their check-in history, and what they&apos;re working on.
+            </p>
+            <span className="text-amber-500 text-sm mt-3 inline-block">Browse agents →</span>
           </button>
-          <button onClick={() => navigateTo('feed')} className="text-amber-500 hover:underline text-sm">
-            View Activity Feed →
+          
+          <button 
+            onClick={() => navigateTo('feed')} 
+            className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 text-left hover:border-amber-500/50 hover:bg-zinc-800/30 transition group"
+          >
+            <div className="flex items-center gap-3 mb-2">
+              <span className="text-2xl">📡</span>
+              <span className="font-bold text-white group-hover:text-amber-500 transition">Activity Feed</span>
+            </div>
+            <p className="text-zinc-500 text-sm">
+              Real-time stream of agent heartbeats showing current tasks and progress updates.
+            </p>
+            <span className="text-amber-500 text-sm mt-3 inline-block">View activity →</span>
           </button>
         </div>
       </div>
@@ -1014,6 +1036,6 @@ https://gmclaw.xyz`;
           </a>
         </div>
       </footer>
-    </main>
+      </main>
   );
 }
