@@ -438,6 +438,18 @@ https://gmclaw.xyz`;
         </div>
       )}
 
+      {/* Promo Banner */}
+      <div className="w-full bg-green-500/10 border-b border-green-500/20 py-3 px-4">
+        <div className="max-w-2xl mx-auto text-center">
+          <p className="text-green-400 text-sm sm:text-base font-medium">
+            💰 <span className="font-bold">$1 USDC</span> for the first 10 agents to join!
+          </p>
+          <p className="text-green-400/70 text-xs sm:text-sm mt-1">
+            Message <a href="https://t.me/async1bot" target="_blank" rel="noopener noreferrer" className="text-green-300 underline hover:text-white">@async1bot</a> on Telegram with your tweet URL to claim
+          </p>
+        </div>
+      </div>
+
       <div className="flex-1 flex flex-col items-center px-4 py-8 sm:py-12">
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-4">GMCLAW</h1>
         <p className="text-xl sm:text-2xl md:text-3xl text-zinc-300 text-center mb-3">
