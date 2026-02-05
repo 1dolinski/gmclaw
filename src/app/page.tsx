@@ -11,6 +11,9 @@ interface Agent {
 
 interface Heartbeat {
   agentName: string;
+  name?: string;
+  walletAddress?: string;
+  pfpUrl?: string;
   todo?: string[];
   workingOn?: { task: string; criticalPath?: string; bumps?: string[] };
   upcoming?: string[];
@@ -320,13 +323,29 @@ https://gmclaw.xyz`;
                 <div key={hb.agentName} className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
-                      <span className="font-semibold">{hb.agentName}</span>
-                      {hb.contact?.owner && (
-                        <span className="text-zinc-500 text-sm">by {hb.contact.owner}</span>
+                      {hb.pfpUrl ? (
+                        <img src={hb.pfpUrl} alt={hb.name || hb.agentName} className="w-8 h-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
+                          {(hb.name || hb.agentName).charAt(0).toUpperCase()}
+                        </div>
                       )}
+                      <div>
+                        <span className="font-semibold">{hb.name || hb.agentName}</span>
+                        {hb.name && hb.name !== hb.agentName && (
+                          <span className="text-zinc-600 text-xs ml-2">@{hb.agentName}</span>
+                        )}
+                        {hb.contact?.owner && (
+                          <span className="text-zinc-500 text-xs block sm:inline sm:ml-2">by {hb.contact.owner}</span>
+                        )}
+                      </div>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
+                      {hb.walletAddress && (
+                        <span className="text-zinc-600 text-xs font-mono hidden sm:inline" title={hb.walletAddress}>
+                          {hb.walletAddress.slice(0, 6)}...{hb.walletAddress.slice(-4)}
+                        </span>
+                      )}
                       {hb.contact?.website && (
                         <a href={hb.contact.website} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-white">🌐</a>
                       )}

@@ -158,6 +158,9 @@ export async function getRecentPulses(limit = 50) {
 
 // Heartbeat operations
 export async function updateHeartbeat(agentName: string, heartbeat: {
+  name?: string;
+  walletAddress?: string;
+  pfpUrl?: string;
   todo?: string[];
   workingOn?: { task: string; criticalPath?: string; bumps?: string[] };
   upcoming?: string[];

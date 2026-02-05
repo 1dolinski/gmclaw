@@ -14,13 +14,22 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { agentName, todo, workingOn, upcoming, done, contact } = body;
+    const { agentName, name, walletAddress, pfpUrl, todo, workingOn, upcoming, done, contact } = body;
 
     if (!agentName) {
       return NextResponse.json({ error: 'agentName is required' }, { status: 400 });
     }
 
-    const result = await updateHeartbeat(agentName, { todo, workingOn, upcoming, done, contact });
+    const result = await updateHeartbeat(agentName, { 
+      name, 
+      walletAddress, 
+      pfpUrl, 
+      todo, 
+      workingOn, 
+      upcoming, 
+      done, 
+      contact 
+    });
     return NextResponse.json(result);
   } catch (error) {
     console.error('Error updating heartbeat:', error);
