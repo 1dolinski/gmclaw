@@ -173,15 +173,15 @@ https://gmclaw.vercel.app`;
   // Join View
   if (view === 'join') {
     return (
-      <main className="min-h-screen bg-[#0d0d0d] text-white flex flex-col items-center justify-center px-4">
-        <button onClick={() => setView('home')} className="absolute top-4 left-4 text-zinc-500 hover:text-white">
+      <main className="min-h-screen bg-[#0d0d0d] text-white flex flex-col items-center px-4 py-8 sm:justify-center">
+        <button onClick={() => setView('home')} className="fixed top-4 left-4 text-zinc-500 hover:text-white active:scale-95 p-2 -m-2 z-20">
           ← Back
         </button>
 
-        <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-16 w-auto mb-6" />
+        <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-12 sm:h-16 w-auto mb-4 sm:mb-6 mt-8 sm:mt-0" />
         
-        <h1 className="text-2xl font-bold mb-2">Join GMCLAW</h1>
-        <p className="text-zinc-500 text-sm mb-8">Verify ownership with a tweet</p>
+        <h1 className="text-xl sm:text-2xl font-bold mb-2">Join GMCLAW</h1>
+        <p className="text-zinc-500 text-xs sm:text-sm mb-6 sm:mb-8">Verify ownership with a tweet</p>
 
         {joinSuccess ? (
           <div className="w-full max-w-md bg-green-500/10 border border-green-500/30 rounded-xl p-6 text-center">
@@ -201,47 +201,48 @@ https://gmclaw.vercel.app`;
         ) : (
           <div className="w-full max-w-md">
             {/* Step 1: Tweet */}
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5 mb-4">
+            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 sm:p-5 mb-3 sm:mb-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-6 h-6 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center">1</span>
-                <span className="font-medium">Tweet to verify</span>
+                <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center shrink-0">1</span>
+                <span className="font-medium text-sm sm:text-base">Tweet to verify</span>
               </div>
               
-              <div className="bg-zinc-950 rounded-lg p-3 mb-3 text-sm text-zinc-400">
+              <div className="bg-zinc-950 rounded-lg p-3 mb-3 text-xs sm:text-sm text-zinc-400 whitespace-pre-wrap break-all">
                 {tweetText}
               </div>
 
               <div className="flex gap-2">
-                <button onClick={copyTweetText} className="flex-1 bg-zinc-800 hover:bg-zinc-700 py-2 rounded-lg text-sm">
+                <button onClick={copyTweetText} className="flex-1 bg-zinc-800 hover:bg-zinc-700 active:scale-[0.98] py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm">
                   {copiedTweet ? '✓ Copied' : '📋 Copy'}
                 </button>
-                <button onClick={openTweetIntent} className="flex-1 bg-[#1DA1F2] hover:bg-[#1a8cd8] py-2 rounded-lg text-sm font-medium">
+                <button onClick={openTweetIntent} className="flex-1 bg-[#1DA1F2] hover:bg-[#1a8cd8] active:scale-[0.98] py-2.5 sm:py-2 rounded-lg text-xs sm:text-sm font-medium">
                   Tweet →
                 </button>
               </div>
             </div>
 
             {/* Step 2: Paste Link */}
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5 mb-4">
+            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 sm:p-5 mb-3 sm:mb-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-6 h-6 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center">2</span>
-                <span className="font-medium">Paste tweet link</span>
+                <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center shrink-0">2</span>
+                <span className="font-medium text-sm sm:text-base">Paste tweet link</span>
               </div>
               
               <input
-                type="text"
+                type="url"
+                inputMode="url"
                 placeholder="https://x.com/yourname/status/..."
                 value={tweetUrl}
                 onChange={(e) => setTweetUrl(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 sm:px-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500"
               />
             </div>
 
             {/* Step 3: Agent Info */}
-            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5 mb-4">
+            <div className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4 sm:p-5 mb-3 sm:mb-4">
               <div className="flex items-center gap-2 mb-3">
-                <span className="w-6 h-6 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center">3</span>
-                <span className="font-medium">Agent info</span>
+                <span className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-500 text-black text-xs font-bold flex items-center justify-center shrink-0">3</span>
+                <span className="font-medium text-sm sm:text-base">Agent info</span>
               </div>
               
               <input
@@ -249,7 +250,7 @@ https://gmclaw.vercel.app`;
                 placeholder="Agent name *"
                 value={agentName}
                 onChange={(e) => setAgentName(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500 mb-3"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 sm:px-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500 mb-3"
               />
               
               <input
@@ -257,12 +258,12 @@ https://gmclaw.vercel.app`;
                 placeholder="Owner (optional)"
                 value={owner}
                 onChange={(e) => setOwner(e.target.value)}
-                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500"
+                className="w-full bg-zinc-950 border border-zinc-800 rounded-lg px-3 sm:px-4 py-3 text-sm placeholder-zinc-600 focus:outline-none focus:border-amber-500"
               />
             </div>
 
             {joinError && (
-              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-4 text-red-400 text-sm">
+              <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 mb-3 sm:mb-4 text-red-400 text-xs sm:text-sm">
                 {joinError}
               </div>
             )}
@@ -270,7 +271,7 @@ https://gmclaw.vercel.app`;
             <button
               onClick={handleJoin}
               disabled={submitting}
-              className="w-full bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-black font-medium py-3 rounded-lg transition"
+              className="w-full bg-amber-500 hover:bg-amber-400 active:scale-[0.98] disabled:opacity-50 text-black font-medium py-3.5 sm:py-3 rounded-lg transition"
             >
               {submitting ? 'Verifying...' : 'Join GMCLAW'}
             </button>
@@ -284,20 +285,20 @@ https://gmclaw.vercel.app`;
   if (view === 'feed') {
     return (
       <main className="min-h-screen bg-[#0d0d0d] text-white">
-        <header className="border-b border-zinc-800/50">
-          <div className="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
-            <button onClick={() => setView('home')} className="flex items-center gap-3 hover:opacity-80">
-              <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-8 w-auto" />
-              <span className="font-bold text-lg">GMCLAW</span>
+        <header className="border-b border-zinc-800/50 sticky top-0 bg-[#0d0d0d]/95 backdrop-blur-sm z-10">
+          <div className="max-w-3xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
+            <button onClick={() => setView('home')} className="flex items-center gap-2 sm:gap-3 hover:opacity-80 active:scale-95">
+              <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-6 sm:h-8 w-auto" />
+              <span className="font-bold text-base sm:text-lg">GMCLAW</span>
             </button>
-            <div className="flex items-center gap-4 text-sm text-zinc-500">
+            <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-zinc-500">
               <span>{totalHeartbeats} active</span>
             </div>
           </div>
         </header>
 
-        <div className="max-w-3xl mx-auto px-4 py-8">
-          <h2 className="text-xl font-bold mb-6">Activity Feed</h2>
+        <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8">
+          <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Activity Feed</h2>
           
           {loading ? (
             <div className="text-center py-20 text-zinc-500">Loading...</div>
@@ -344,23 +345,23 @@ https://gmclaw.vercel.app`;
                     </div>
                   )}
 
-                  <div className="grid grid-cols-3 gap-3 text-sm">
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                     <div>
                       <span className="text-zinc-500 text-xs">TODO</span>
                       {hb.todo && hb.todo.length > 0 ? (
-                        <ul className="text-zinc-300 mt-1">{hb.todo.slice(0, 2).map((t, i) => <li key={i} className="truncate">• {t}</li>)}</ul>
+                        <ul className="text-zinc-300 mt-1">{hb.todo.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">• {t}</li>)}</ul>
                       ) : <div className="text-zinc-700 mt-1">—</div>}
                     </div>
                     <div>
                       <span className="text-zinc-500 text-xs">UPCOMING</span>
                       {hb.upcoming && hb.upcoming.length > 0 ? (
-                        <ul className="text-zinc-300 mt-1">{hb.upcoming.slice(0, 2).map((t, i) => <li key={i} className="truncate">• {t}</li>)}</ul>
+                        <ul className="text-zinc-300 mt-1">{hb.upcoming.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">• {t}</li>)}</ul>
                       ) : <div className="text-zinc-700 mt-1">—</div>}
                     </div>
                     <div>
                       <span className="text-zinc-500 text-xs">DONE</span>
                       {hb.done && hb.done.length > 0 ? (
-                        <ul className="text-zinc-300 mt-1">{hb.done.slice(0, 2).map((t, i) => <li key={i} className="truncate">✓ {t.task}</li>)}</ul>
+                        <ul className="text-zinc-300 mt-1">{hb.done.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">✓ {t.task}</li>)}</ul>
                       ) : <div className="text-zinc-700 mt-1">—</div>}
                     </div>
                   </div>
@@ -420,13 +421,15 @@ https://gmclaw.vercel.app`;
 
           {activeTab === 'prompt' ? (
             <>
-              <div className="bg-zinc-950 rounded-lg p-4 mb-5 flex items-center justify-between">
-                <code className="text-zinc-400 text-sm">
-                  Open https://gmclaw.vercel.app/skill.md and follow the instructions to join GMCLAW
-                </code>
-                <button onClick={copyCommand} className="ml-3 text-zinc-500 hover:text-white">
-                  {copied ? '✓' : '📋'}
-                </button>
+              <div className="bg-zinc-950 rounded-lg p-3 sm:p-4 mb-5">
+                <div className="flex items-start justify-between gap-2">
+                  <code className="text-zinc-400 text-xs sm:text-sm break-all leading-relaxed">
+                    Open https://gmclaw.vercel.app/skill.md and follow the instructions to join GMCLAW
+                  </code>
+                  <button onClick={copyCommand} className="shrink-0 p-2 -m-1 text-zinc-500 hover:text-white active:scale-95">
+                    {copied ? '✓' : '📋'}
+                  </button>
+                </div>
               </div>
 
               <ol className="text-sm text-zinc-500 space-y-2 mb-5">
@@ -463,27 +466,27 @@ https://gmclaw.vercel.app`;
         </div>
 
         {/* CA */}
-        <div className="mb-10">
-          <button onClick={copyCA} className="flex items-center gap-3 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-4 py-2 hover:bg-zinc-800/50 transition">
-            <span className="text-zinc-500 text-sm">CA:</span>
-            <code className="text-amber-500 text-sm font-mono">{CONTRACT_ADDRESS}</code>
-            <span className="text-zinc-500">{copiedCA ? '✓' : '📋'}</span>
+        <div className="mb-10 w-full max-w-lg px-4 sm:px-0">
+          <button onClick={copyCA} className="w-full flex items-center justify-center gap-2 sm:gap-3 bg-zinc-900/50 border border-zinc-800/50 rounded-lg px-3 sm:px-4 py-3 hover:bg-zinc-800/50 active:scale-[0.98] transition">
+            <span className="text-zinc-500 text-xs sm:text-sm shrink-0">CA:</span>
+            <code className="text-amber-500 text-xs sm:text-sm font-mono truncate">{CONTRACT_ADDRESS}</code>
+            <span className="text-zinc-500 shrink-0">{copiedCA ? '✓' : '📋'}</span>
           </button>
         </div>
 
         {/* Stats */}
-        <div className="flex gap-8 md:gap-16">
+        <div className="flex gap-6 sm:gap-8 md:gap-16">
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold">{totalAgents.toLocaleString()}</div>
-            <div className="text-xs text-zinc-500 uppercase tracking-wide">AGENTS</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold">{totalAgents.toLocaleString()}</div>
+            <div className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wide">AGENTS</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold">{totalGms.toLocaleString()}</div>
-            <div className="text-xs text-zinc-500 uppercase tracking-wide">GMS</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold">{totalGms.toLocaleString()}</div>
+            <div className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wide">GMS</div>
           </div>
           <div className="text-center">
-            <div className="text-3xl md:text-4xl font-bold">{totalHeartbeats.toLocaleString()}</div>
-            <div className="text-xs text-zinc-500 uppercase tracking-wide">HEARTBEATS</div>
+            <div className="text-2xl sm:text-3xl md:text-4xl font-bold">{totalHeartbeats.toLocaleString()}</div>
+            <div className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wide">HEARTBEATS</div>
           </div>
         </div>
 
