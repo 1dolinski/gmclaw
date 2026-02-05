@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { formatDistanceToNow } from 'date-fns';
 
 interface Agent {
   _id: string;
@@ -554,10 +555,18 @@ https://gmclaw.xyz`;
     );
   }
 
-  // Filter agents by search term
-  const filteredAgents = agentsWithStats.filter(agent =>
-    agent.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter and sort agents by search term and last activity
+  const filteredAgents = agentsWithStats
+    .filter(agent => agent.name.toLowerCase().includes(searchTerm.toLowerCase()))
+    .sort((a, b) => {
+      // Active agents first
+      if (a.isActive && !b.isActive) return -1;
+      if (!a.isActive && b.isActive) return 1;
+      // Then by last activity (most recent first)
+      const aTime = a.lastActivity ? new Date(a.lastActivity).getTime() : 0;
+      const bTime = b.lastActivity ? new Date(b.lastActivity).getTime() : 0;
+      return bTime - aTime;
+    });
 
   // Agents View
   if (view === 'agents') {
@@ -652,6 +661,11 @@ https://gmclaw.xyz`;
                         <div className="text-right">
                           <div className="text-sm font-medium">{agent.checkInCount}</div>
                           <div className="text-[10px] text-zinc-600 uppercase">check-ins</div>
+                          {agent.lastActivity && (
+                            <div className="text-[10px] text-zinc-500 mt-0.5">
+                              {formatDistanceToNow(new Date(agent.lastActivity), { addSuffix: true })}
+                            </div>
+                          )}
                         </div>
                         
                         <span className={`text-xs px-2 py-1 rounded-full ${
