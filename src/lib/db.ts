@@ -255,6 +255,21 @@ export async function getHeartbeatHistory(agentName: string, limit = 20) {
     .toArray();
 }
 
+export async function getAllHeartbeatHistory(skip = 0, limit = 20) {
+  const database = await getDb();
+  if (!database) return { entries: [], total: 0 };
+
+  const total = await database.collection(COLLECTIONS.heartbeatHistory).countDocuments();
+  const entries = await database.collection(COLLECTIONS.heartbeatHistory)
+    .find({})
+    .sort({ timestamp: -1 })
+    .skip(skip)
+    .limit(limit)
+    .toArray();
+
+  return { entries, total };
+}
+
 export async function getHeartbeatCountByAgent(agentName: string) {
   const database = await getDb();
   if (!database) return 0;

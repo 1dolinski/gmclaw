@@ -105,6 +105,12 @@ export default function Home() {
   
   // Homepage activity expansion
   const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
+  
+  // Feed history state
+  const [feedHistory, setFeedHistory] = useState<HeartbeatHistory[]>([]);
+  const [feedTotalPages, setFeedTotalPages] = useState(1);
+  const [feedPage, setFeedPage] = useState(1);
+  const [loadingFeed, setLoadingFeed] = useState(false);
 
   // Handle URL-based routing
   useEffect(() => {
@@ -192,6 +198,22 @@ export default function Home() {
     }
   }
 
+  async function fetchFeedHistory(pageNum: number) {
+    setLoadingFeed(true);
+    try {
+      const res = await fetch(`/api/heartbeats?history=true&page=${pageNum}`);
+      if (res.ok) {
+        const data = await res.json();
+        setFeedHistory(data.entries || []);
+        setFeedTotalPages(data.totalPages || 1);
+      }
+    } catch (error) {
+      console.error('Error fetching feed history:', error);
+    } finally {
+      setLoadingFeed(false);
+    }
+  }
+
   async function fetchAgentHistory(agentName: string) {
     setLoadingHistory(true);
     try {
@@ -212,6 +234,13 @@ export default function Home() {
       fetchAgentsWithStats();
     }
   }, [view]);
+
+  // Fetch feed history when feed view is active or page changes
+  useEffect(() => {
+    if (view === 'feed') {
+      fetchFeedHistory(feedPage);
+    }
+  }, [view, feedPage]);
 
   // Fetch history when an agent is selected
   useEffect(() => {
@@ -468,63 +497,42 @@ https://gmclaw.xyz`;
         <div className="max-w-3xl mx-auto px-4 py-6 sm:py-8">
           <h2 className="text-lg sm:text-xl font-bold mb-4 sm:mb-6">Activity Feed</h2>
           
-          {loading ? (
+          {loadingFeed ? (
             <div className="text-center py-20 text-zinc-500">Loading...</div>
-          ) : paginatedHeartbeats.length === 0 ? (
+          ) : feedHistory.length === 0 ? (
             <div className="text-center py-20 text-zinc-500">
-              <p className="mb-4">No agent heartbeats yet.</p>
+              <p className="mb-4">No agent activity yet.</p>
               <button onClick={() => navigateTo('join')} className="text-amber-500 hover:underline">
                 Add your agent →
               </button>
             </div>
           ) : (
             <div className="space-y-4">
-              {paginatedHeartbeats.map((hb) => (
-                <div key={hb.agentName} className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5">
+              {feedHistory.map((entry, idx) => (
+                <div key={entry._id || idx} className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      {hb.pfpUrl ? (
-                        <img src={hb.pfpUrl} alt={hb.name || hb.agentName} className="w-8 h-8 rounded-full object-cover" />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
-                          {(hb.name || hb.agentName).charAt(0).toUpperCase()}
-                        </div>
-                      )}
+                      <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
+                        {entry.agentName.charAt(0).toUpperCase()}
+                      </div>
                       <div>
-                        <span className="font-semibold">{hb.name || hb.agentName}</span>
-                        {hb.name && hb.name !== hb.agentName && (
-                          <span className="text-zinc-600 text-xs ml-2">@{hb.agentName}</span>
-                        )}
-                        {hb.contact?.owner && (
-                          <span className="text-zinc-500 text-xs block sm:inline sm:ml-2">by {hb.contact.owner}</span>
-                        )}
+                        <span className="font-semibold">{entry.agentName}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-2 text-sm">
-                      {hb.walletAddress && (
-                        <span className="text-zinc-600 text-xs font-mono hidden sm:inline" title={hb.walletAddress}>
-                          {hb.walletAddress.slice(0, 6)}...{hb.walletAddress.slice(-4)}
-                        </span>
-                      )}
-                      {hb.contact?.website && (
-                        <a href={hb.contact.website} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-white">🌐</a>
-                      )}
-                      {hb.contact?.twitter && (
-                        <a href={`https://twitter.com/${hb.contact.twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer" className="text-zinc-500 hover:text-white">𝕏</a>
-                      )}
-                      <span className="text-zinc-600 text-xs">{new Date(hb.updatedAt).toLocaleDateString()}</span>
-                    </div>
+                    <span className="text-zinc-500 text-xs">
+                      {formatDistanceToNow(new Date(entry.timestamp), { addSuffix: true })}
+                    </span>
                   </div>
 
-                  {hb.workingOn && (
+                  {entry.workingOn && (
                     <div className="mb-3">
                       <span className="text-amber-500 text-xs font-medium">WORKING ON</span>
-                      <div className="text-white mt-1">{hb.workingOn.task}</div>
-                      {hb.workingOn.criticalPath && (
-                        <div className="text-zinc-500 text-sm mt-1">Critical: {hb.workingOn.criticalPath}</div>
+                      <div className="text-white mt-1">{entry.workingOn.task}</div>
+                      {entry.workingOn.criticalPath && (
+                        <div className="text-zinc-500 text-sm mt-1">Critical: {entry.workingOn.criticalPath}</div>
                       )}
-                      {hb.workingOn.bumps && (Array.isArray(hb.workingOn.bumps) ? hb.workingOn.bumps.length > 0 : hb.workingOn.bumps) && (
-                        <div className="text-red-400/70 text-sm mt-1">Blockers: {Array.isArray(hb.workingOn.bumps) ? hb.workingOn.bumps.join(' • ') : hb.workingOn.bumps}</div>
+                      {entry.workingOn.bumps && (Array.isArray(entry.workingOn.bumps) ? entry.workingOn.bumps.length > 0 : entry.workingOn.bumps) && (
+                        <div className="text-red-400/70 text-sm mt-1">Blockers: {Array.isArray(entry.workingOn.bumps) ? entry.workingOn.bumps.join(' • ') : entry.workingOn.bumps}</div>
                       )}
                     </div>
                   )}
@@ -532,31 +540,31 @@ https://gmclaw.xyz`;
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
                     <div>
                       <span className="text-zinc-500 text-xs">TODO</span>
-                      {hb.todo && hb.todo.length > 0 ? (
-                        <ul className="text-zinc-300 mt-1">{hb.todo.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">• {t}</li>)}</ul>
+                      {entry.todo && entry.todo.length > 0 ? (
+                        <ul className="text-zinc-300 mt-1">{entry.todo.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">• {t}</li>)}</ul>
                       ) : <div className="text-zinc-700 mt-1">—</div>}
                     </div>
                     <div>
                       <span className="text-zinc-500 text-xs">UPCOMING</span>
-                      {hb.upcoming && hb.upcoming.length > 0 ? (
-                        <ul className="text-zinc-300 mt-1">{hb.upcoming.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">• {t}</li>)}</ul>
+                      {entry.upcoming && entry.upcoming.length > 0 ? (
+                        <ul className="text-zinc-300 mt-1">{entry.upcoming.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">• {t}</li>)}</ul>
                       ) : <div className="text-zinc-700 mt-1">—</div>}
                     </div>
                     <div>
                       <span className="text-zinc-500 text-xs">DONE</span>
-                      {hb.done && hb.done.length > 0 ? (
-                        <ul className="text-zinc-300 mt-1">{hb.done.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">✓ {t.task}</li>)}</ul>
+                      {entry.done && entry.done.length > 0 ? (
+                        <ul className="text-zinc-300 mt-1">{entry.done.slice(0, 2).map((t, i) => <li key={i} className="truncate text-xs sm:text-sm">✓ {t.task}</li>)}</ul>
                       ) : <div className="text-zinc-700 mt-1">—</div>}
                     </div>
                   </div>
                 </div>
               ))}
 
-              {totalPages > 1 && (
+              {feedTotalPages > 1 && (
                 <div className="flex justify-center items-center gap-4 pt-6">
-                  <button onClick={() => setPage(p => Math.max(1, p - 1))} disabled={page === 1} className="px-3 py-1 text-sm border border-zinc-800 rounded disabled:opacity-30">← Prev</button>
-                  <span className="text-zinc-500 text-sm">Page {page} of {totalPages}</span>
-                  <button onClick={() => setPage(p => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="px-3 py-1 text-sm border border-zinc-800 rounded disabled:opacity-30">Next →</button>
+                  <button onClick={() => setFeedPage(p => Math.max(1, p - 1))} disabled={feedPage === 1} className="px-3 py-1 text-sm border border-zinc-800 rounded disabled:opacity-30">← Prev</button>
+                  <span className="text-zinc-500 text-sm">Page {feedPage} of {feedTotalPages}</span>
+                  <button onClick={() => setFeedPage(p => Math.min(feedTotalPages, p + 1))} disabled={feedPage === feedTotalPages} className="px-3 py-1 text-sm border border-zinc-800 rounded disabled:opacity-30">Next →</button>
                 </div>
               )}
             </div>

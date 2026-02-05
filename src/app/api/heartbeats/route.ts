@@ -1,15 +1,32 @@
 import { NextResponse } from 'next/server';
-import { getAllHeartbeats, updateHeartbeat, getHeartbeatHistory, appendHeartbeatHistory } from '@/lib/db';
+import { getAllHeartbeats, updateHeartbeat, getHeartbeatHistory, appendHeartbeatHistory, getAllHeartbeatHistory } from '@/lib/db';
+
+const FEED_PAGE_SIZE = 20;
 
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const agentName = searchParams.get('agent');
+    const history = searchParams.get('history');
+    const page = parseInt(searchParams.get('page') || '1', 10);
     
     // If agent query param provided, return history for that agent
     if (agentName) {
-      const history = await getHeartbeatHistory(agentName);
-      return NextResponse.json(history);
+      const agentHistory = await getHeartbeatHistory(agentName);
+      return NextResponse.json(agentHistory);
+    }
+    
+    // If history=true, return paginated activity feed
+    if (history === 'true') {
+      const skip = (page - 1) * FEED_PAGE_SIZE;
+      const { entries, total } = await getAllHeartbeatHistory(skip, FEED_PAGE_SIZE);
+      return NextResponse.json({
+        entries,
+        total,
+        page,
+        totalPages: Math.ceil(total / FEED_PAGE_SIZE),
+        pageSize: FEED_PAGE_SIZE,
+      });
     }
     
     // Otherwise return all current heartbeats

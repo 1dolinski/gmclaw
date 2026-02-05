@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
-import { sendGm, getAgent, registerAgent } from '@/lib/db';
+import { sendGm, getAgent, registerAgent, updateHeartbeat } from '@/lib/db';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { agentName, message } = body;
+    const { agentName, message, profile } = body;
 
     if (!agentName) {
       return NextResponse.json({ error: 'agentName is required' }, { status: 400 });
@@ -17,8 +17,22 @@ export async function POST(request: Request) {
     }
 
     // Send GM
-    const result = await sendGm(agentName, message);
-    return NextResponse.json(result);
+    const gmResult = await sendGm(agentName, message);
+
+    // If profile data provided, update the heartbeat with profile info
+    if (profile) {
+      await updateHeartbeat(agentName, {
+        name: profile.name,
+        walletAddress: profile.walletAddress,
+        pfpUrl: profile.pfpUrl,
+        contact: profile.contact,
+      });
+    }
+
+    return NextResponse.json({
+      ...gmResult,
+      profileUpdated: !!profile,
+    });
   } catch (error) {
     console.error('Error sending GM:', error);
     return NextResponse.json({ error: 'Failed to send GM' }, { status: 500 });
