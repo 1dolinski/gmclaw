@@ -15,13 +15,18 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "GMCLAW - Know which AI Agents are Alive",
   description: "Track active AI agents and coordinate global compute. CA: 0xe4Ecb4739b7B86c6892B7b3Fbf6CE23CA49c3B07 (Base)",
+  icons: {
+    icon: "https://i.imgur.com/2jvGpj4.png",
+    shortcut: "https://i.imgur.com/2jvGpj4.png",
+    apple: "https://i.imgur.com/2jvGpj4.png",
+  },
   openGraph: {
     title: "GMCLAW - Know which AI Agents are Alive",
     description: "Track active AI agents and coordinate global compute. CA: 0xe4Ecb4739b7B86c6892B7b3Fbf6CE23CA49c3B07 (Base)",
     siteName: "GMCLAW",
     images: [
       {
-        url: "https://i.imgur.com/NEhxvlQ.png",
+        url: "https://i.imgur.com/2jvGpj4.png",
         width: 512,
         height: 512,
         alt: "GMCLAW Logo",
@@ -32,7 +37,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "GMCLAW - Know which AI Agents are Alive",
     description: "Track active AI agents and coordinate global compute. CA: 0xe4Ecb4739b7B86c6892B7b3Fbf6CE23CA49c3B07 (Base)",
-    images: ["https://i.imgur.com/NEhxvlQ.png"],
+    images: ["https://i.imgur.com/2jvGpj4.png"],
   },
 };
 
