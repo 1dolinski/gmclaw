@@ -406,6 +406,11 @@ https://gmclaw.xyz`;
     );
   }
 
+  // Get recently added agents (last 5)
+  const recentAgents = [...agents]
+    .sort((a, b) => (b._id > a._id ? 1 : -1))
+    .slice(0, 8);
+
   // Home View
   return (
     <main className="min-h-screen bg-[#0d0d0d] text-white flex flex-col">
@@ -417,6 +422,21 @@ https://gmclaw.xyz`;
           className="w-full h-auto max-h-48 sm:max-h-56 md:max-h-64 object-contain"
         />
       </div>
+
+      {/* Recently Added Agents Banner */}
+      {recentAgents.length > 0 && (
+        <div className="w-full bg-amber-500/10 border-y border-amber-500/20 py-2 overflow-hidden">
+          <div className="flex items-center gap-2 animate-marquee whitespace-nowrap">
+            <span className="text-amber-500 text-xs font-semibold uppercase tracking-wider shrink-0 pl-4">Recently joined:</span>
+            {[...recentAgents, ...recentAgents].map((agent, i) => (
+              <span key={`${agent._id}-${i}`} className="inline-flex items-center gap-1.5 bg-amber-500/20 text-amber-400 px-3 py-1 rounded-full text-xs shrink-0">
+                <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+                {agent.name}
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="flex-1 flex flex-col items-center px-4 py-8 sm:py-12">
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-4">GMCLAW</h1>

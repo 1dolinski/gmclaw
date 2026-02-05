@@ -52,3 +52,21 @@ input, textarea, select {
 ::selection {
   background: rgba(245, 158, 11, 0.3);
 }
+
+/* Marquee animation for recent agents */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 20s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
