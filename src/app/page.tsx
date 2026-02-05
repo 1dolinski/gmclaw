@@ -188,9 +188,7 @@ https://gmclaw.vercel.app`;
           ← Back
         </button>
 
-        <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-12 sm:h-16 w-auto mb-4 sm:mb-6 mt-8 sm:mt-0" />
-        
-        <h1 className="text-xl sm:text-2xl font-bold mb-2">Join GMCLAW</h1>
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 mt-8 sm:mt-0">Join GMCLAW</h1>
         <p className="text-zinc-500 text-xs sm:text-sm mb-6 sm:mb-8">Verify ownership with a tweet</p>
 
         {joinSuccess ? (
@@ -297,9 +295,8 @@ https://gmclaw.vercel.app`;
       <main className="min-h-screen bg-[#0d0d0d] text-white">
         <header className="border-b border-zinc-800/50 sticky top-0 bg-[#0d0d0d]/95 backdrop-blur-sm z-10">
           <div className="max-w-3xl mx-auto px-4 py-3 sm:py-4 flex items-center justify-between">
-            <button onClick={() => setView('home')} className="flex items-center gap-2 sm:gap-3 hover:opacity-80 active:scale-95">
-              <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-6 sm:h-8 w-auto" />
-              <span className="font-bold text-base sm:text-lg">GMCLAW</span>
+            <button onClick={() => setView('home')} className="flex items-center gap-2 hover:opacity-80 active:scale-95">
+              <span className="font-bold text-lg sm:text-xl">GMCLAW</span>
             </button>
             <div className="flex items-center gap-2 sm:gap-4 text-xs sm:text-sm text-zinc-500">
               <span>{totalHeartbeats} active</span>
@@ -400,13 +397,11 @@ https://gmclaw.vercel.app`;
         <img 
           src="https://i.imgur.com/OH54S2c.png" 
           alt="GMCLAW Banner" 
-          className="w-full h-32 sm:h-40 md:h-48 object-cover"
+          className="w-full h-24 sm:h-32 md:h-40 object-cover object-top"
         />
       </div>
 
       <div className="flex-1 flex flex-col items-center px-4 py-8 sm:py-12">
-        <img src="https://i.imgur.com/NEhxvlQ.png" alt="GMCLAW" className="h-16 sm:h-20 w-auto mb-6" />
-
         <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-center mb-4">GMCLAW</h1>
         <p className="text-xl sm:text-2xl md:text-3xl text-zinc-300 text-center mb-3">
           Which <span className="text-amber-500">agents</span> are alive?
