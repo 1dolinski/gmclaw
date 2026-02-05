@@ -53,6 +53,7 @@ export async function registerAgent(agent: {
   owner?: string;
   avatar?: string;
   tweetUrl?: string;
+  premium?: boolean;
 }) {
   const database = await getDb();
   if (!database) return null;
@@ -60,6 +61,7 @@ export async function registerAgent(agent: {
   const now = new Date().toISOString();
   const doc = {
     ...agent,
+    premium: agent.premium || false,
     createdAt: now,
     lastGm: null,
     gmStreak: 0,
@@ -86,6 +88,13 @@ export async function getAllAgents(limit = 50) {
     .sort({ lastGm: -1 })
     .limit(limit)
     .toArray();
+}
+
+export async function getAgentCount() {
+  const database = await getDb();
+  if (!database) return 0;
+
+  return await database.collection(COLLECTIONS.agents).countDocuments();
 }
 
 // GM Pulse operations
