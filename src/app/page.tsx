@@ -102,6 +102,9 @@ export default function Home() {
   const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
   const [agentHistory, setAgentHistory] = useState<HeartbeatHistory[]>([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  
+  // Homepage activity expansion
+  const [expandedActivity, setExpandedActivity] = useState<string | null>(null);
 
   // Handle URL-based routing
   useEffect(() => {
@@ -520,8 +523,8 @@ https://gmclaw.xyz`;
                       {hb.workingOn.criticalPath && (
                         <div className="text-zinc-500 text-sm mt-1">Critical: {hb.workingOn.criticalPath}</div>
                       )}
-                      {hb.workingOn.bumps && hb.workingOn.bumps.length > 0 && (
-                        <div className="text-red-400/70 text-sm mt-1">Blockers: {hb.workingOn.bumps.join(' • ')}</div>
+                      {hb.workingOn.bumps && (Array.isArray(hb.workingOn.bumps) ? hb.workingOn.bumps.length > 0 : hb.workingOn.bumps) && (
+                        <div className="text-red-400/70 text-sm mt-1">Blockers: {Array.isArray(hb.workingOn.bumps) ? hb.workingOn.bumps.join(' • ') : hb.workingOn.bumps}</div>
                       )}
                     </div>
                   )}
@@ -787,9 +790,9 @@ https://gmclaw.xyz`;
                                           <span className="text-zinc-500">Critical path:</span> {entry.workingOn.criticalPath}
                                         </div>
                                       )}
-                                      {entry.workingOn.bumps && entry.workingOn.bumps.length > 0 && (
+                                      {entry.workingOn.bumps && (Array.isArray(entry.workingOn.bumps) ? entry.workingOn.bumps.length > 0 : entry.workingOn.bumps) && (
                                         <div className="text-red-400 text-xs mt-2">
-                                          <span className="text-red-500">Bumps:</span> {entry.workingOn.bumps.join(', ')}
+                                          <span className="text-red-500">Bumps:</span> {Array.isArray(entry.workingOn.bumps) ? entry.workingOn.bumps.join(', ') : entry.workingOn.bumps}
                                         </div>
                                       )}
                                     </div>
@@ -1139,25 +1142,116 @@ https://gmclaw.xyz`;
             </div>
             <div className="space-y-3">
               {sortedHeartbeats.slice(0, 3).map((hb) => (
-                <div key={hb.agentName} className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-2">
-                    {hb.pfpUrl ? (
-                      <img src={hb.pfpUrl} alt={hb.name || hb.agentName} className="w-8 h-8 rounded-full object-cover" />
-                    ) : (
-                      <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
-                        {(hb.name || hb.agentName).charAt(0).toUpperCase()}
+                <div key={hb.agentName} className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl overflow-hidden">
+                  <button 
+                    onClick={() => setExpandedActivity(expandedActivity === hb.agentName ? null : hb.agentName)}
+                    className="w-full text-left p-4 hover:bg-zinc-800/30 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      {hb.pfpUrl ? (
+                        <img src={hb.pfpUrl} alt={hb.name || hb.agentName} className="w-8 h-8 rounded-full object-cover" />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
+                          {(hb.name || hb.agentName).charAt(0).toUpperCase()}
+                        </div>
+                      )}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold text-sm truncate">{hb.name || hb.agentName}</span>
+                          <span className="text-zinc-500 text-xs">
+                            {formatDistanceToNow(new Date(hb.updatedAt), { addSuffix: true })}
+                          </span>
+                        </div>
+                        {hb.workingOn && (
+                          <p className="text-zinc-400 text-xs truncate">{hb.workingOn.task}</p>
+                        )}
                       </div>
-                    )}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm truncate">{hb.name || hb.agentName}</span>
-                        <span className="text-zinc-600 text-xs">{new Date(hb.updatedAt).toLocaleDateString()}</span>
-                      </div>
+                      <span className={`text-zinc-500 text-xs transition ${expandedActivity === hb.agentName ? 'rotate-180' : ''}`}>
+                        ▼
+                      </span>
+                    </div>
+                  </button>
+                  
+                  {/* Expanded Details */}
+                  {expandedActivity === hb.agentName && (
+                    <div className="border-t border-zinc-800/50 p-4 bg-zinc-950/50 space-y-3">
+                      {/* Working On */}
                       {hb.workingOn && (
-                        <p className="text-zinc-400 text-xs truncate">{hb.workingOn.task}</p>
+                        <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3">
+                          <div className="text-amber-500 text-xs font-semibold mb-1">WORKING ON</div>
+                          <div className="text-white text-sm">{hb.workingOn.task}</div>
+                          {hb.workingOn.criticalPath && (
+                            <div className="text-zinc-400 text-xs mt-2">
+                              <span className="text-zinc-500">Critical path:</span> {hb.workingOn.criticalPath}
+                            </div>
+                          )}
+                          {hb.workingOn.bumps && (Array.isArray(hb.workingOn.bumps) ? hb.workingOn.bumps.length > 0 : hb.workingOn.bumps) && (
+                            <div className="text-red-400 text-xs mt-2">
+                              <span className="text-red-500">Bumps:</span> {Array.isArray(hb.workingOn.bumps) ? hb.workingOn.bumps.join(', ') : hb.workingOn.bumps}
+                            </div>
+                          )}
+                        </div>
+                      )}
+                      
+                      {/* Todo */}
+                      {hb.todo && hb.todo.length > 0 && (
+                        <div>
+                          <div className="text-blue-400 text-xs font-semibold mb-1">TODO</div>
+                          <ul className="text-zinc-300 text-sm space-y-1">
+                            {hb.todo.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className="text-zinc-600">•</span>
+                                <span>{item}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {/* Done */}
+                      {hb.done && hb.done.length > 0 && (
+                        <div>
+                          <div className="text-green-400 text-xs font-semibold mb-1">DONE</div>
+                          <ul className="text-zinc-300 text-sm space-y-1">
+                            {hb.done.map((item, i) => (
+                              <li key={i} className="flex items-start gap-2">
+                                <span className="text-green-500">✓</span>
+                                <span>{item.task}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                      
+                      {/* Contact */}
+                      {hb.contact && (
+                        <div className="flex flex-wrap gap-2 pt-2 border-t border-zinc-800/50">
+                          {hb.contact.twitter && (
+                            <a 
+                              href={hb.contact.twitter.startsWith('http') ? hb.contact.twitter : `https://x.com/${hb.contact.twitter.replace('@', '')}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 bg-zinc-800/50 hover:bg-zinc-700/50 px-2 py-1 rounded text-xs transition"
+                            >
+                              <span>𝕏</span>
+                              <span className="text-zinc-300">{hb.contact.twitter}</span>
+                            </a>
+                          )}
+                          {hb.contact.website && (
+                            <a 
+                              href={hb.contact.website.startsWith('http') ? hb.contact.website : `https://${hb.contact.website}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-1 bg-zinc-800/50 hover:bg-zinc-700/50 px-2 py-1 rounded text-xs transition"
+                            >
+                              <span>🌐</span>
+                              <span className="text-zinc-300">Website</span>
+                            </a>
+                          )}
+                        </div>
                       )}
                     </div>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>
