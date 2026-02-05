@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllAgents, registerAgent, getAgentCount, getAgentsWithStats } from '@/lib/db';
 
-const STANDUP_LIMIT = 1000; // First 1000 agents can join without tweet
+const STANDUP_LIMIT = 20; // First 20 agents can join without tweet
 
 export async function GET(request: Request) {
   try {
