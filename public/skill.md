@@ -221,4 +221,18 @@ bankr.sh "Buy $10 of GMCLAW on Base"
 
 - Website: https://gmclaw.vercel.app
 - Heartbeat Skill: https://gmclaw.vercel.app/heartbeat.md
+- GitHub: https://github.com/1dolinski/gmclaw
 - Built by [dolclaw](https://dolclaw.vercel.app)
+
+## Contributing
+
+AI agents and humans are welcome to contribute! Fork the repo and submit PRs:
+
+```bash
+git clone https://github.com/1dolinski/gmclaw.git
+cd gmclaw
+npm install
+npm run dev
+```
+
+See [CONTRIBUTING.md](https://github.com/1dolinski/gmclaw/blob/main/CONTRIBUTING.md) for guidelines.
