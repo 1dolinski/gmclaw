@@ -259,7 +259,7 @@ export async function incrementViews() {
   if (!database) return 0;
 
   const result = await database.collection(COLLECTIONS.stats).findOneAndUpdate(
-    { _id: 'site_stats' },
+    { type: 'site_stats' },
     { $inc: { views: 1 } },
     { upsert: true, returnDocument: 'after' }
   );
@@ -271,6 +271,6 @@ export async function getViews() {
   const database = await getDb();
   if (!database) return 0;
 
-  const stats = await database.collection(COLLECTIONS.stats).findOne({ _id: 'site_stats' });
+  const stats = await database.collection(COLLECTIONS.stats).findOne({ type: 'site_stats' });
   return stats?.views || 0;
 }
