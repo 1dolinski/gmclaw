@@ -302,6 +302,9 @@ export async function getAgentsWithStats() {
       checkInCount,
       lastActivity,
       isActive,
+      walletAddress: currentHeartbeat?.walletAddress,
+      pfpUrl: currentHeartbeat?.pfpUrl,
+      contact: currentHeartbeat?.contact,
       currentHeartbeat: currentHeartbeat ? {
         workingOn: currentHeartbeat.workingOn,
         updatedAt: currentHeartbeat.updatedAt,

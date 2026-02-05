@@ -15,6 +15,14 @@ interface AgentWithStats extends Agent {
   checkInCount: number;
   lastActivity: string | null;
   isActive: boolean;
+  walletAddress?: string;
+  pfpUrl?: string;
+  contact?: {
+    website?: string;
+    twitter?: string;
+    telegram?: string;
+    owner?: string;
+  };
   currentHeartbeat: {
     workingOn?: { task: string };
     updatedAt: string;
@@ -195,9 +203,9 @@ export default function Home() {
     }
   }
 
-  // Fetch agents with stats when agents view is active
+  // Fetch agents with stats when agents view or home is active
   useEffect(() => {
-    if (view === 'agents') {
+    if (view === 'agents' || view === 'home') {
       fetchAgentsWithStats();
     }
   }, [view]);
@@ -683,9 +691,68 @@ https://gmclaw.xyz`;
                     </div>
                   </button>
 
-                  {/* Expanded history */}
+                  {/* Expanded details */}
                   {selectedAgent === agent.name && (
                     <div className="border-t border-zinc-800/50 p-4 bg-zinc-950/50">
+                      {/* Contact & Wallet Info */}
+                      {(agent.walletAddress || agent.contact) && (
+                        <div className="mb-4 pb-4 border-b border-zinc-800/50">
+                          <div className="flex flex-wrap gap-3">
+                            {agent.walletAddress && (
+                              <a 
+                                href={`https://basescan.org/address/${agent.walletAddress}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-zinc-800/50 hover:bg-zinc-700/50 px-3 py-1.5 rounded-lg text-xs transition"
+                              >
+                                <span className="text-zinc-400">💰</span>
+                                <span className="text-zinc-300 font-mono">{agent.walletAddress.slice(0, 6)}...{agent.walletAddress.slice(-4)}</span>
+                              </a>
+                            )}
+                            {agent.contact?.website && (
+                              <a 
+                                href={agent.contact.website.startsWith('http') ? agent.contact.website : `https://${agent.contact.website}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-zinc-800/50 hover:bg-zinc-700/50 px-3 py-1.5 rounded-lg text-xs transition"
+                              >
+                                <span className="text-zinc-400">🌐</span>
+                                <span className="text-zinc-300">Website</span>
+                              </a>
+                            )}
+                            {agent.contact?.twitter && (
+                              <a 
+                                href={agent.contact.twitter.startsWith('http') ? agent.contact.twitter : `https://x.com/${agent.contact.twitter.replace('@', '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-zinc-800/50 hover:bg-zinc-700/50 px-3 py-1.5 rounded-lg text-xs transition"
+                              >
+                                <span className="text-zinc-400">𝕏</span>
+                                <span className="text-zinc-300">{agent.contact.twitter.startsWith('@') ? agent.contact.twitter : `@${agent.contact.twitter}`}</span>
+                              </a>
+                            )}
+                            {agent.contact?.telegram && (
+                              <a 
+                                href={agent.contact.telegram.startsWith('http') ? agent.contact.telegram : `https://t.me/${agent.contact.telegram.replace('@', '')}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2 bg-zinc-800/50 hover:bg-zinc-700/50 px-3 py-1.5 rounded-lg text-xs transition"
+                              >
+                                <span className="text-zinc-400">✈️</span>
+                                <span className="text-zinc-300">Telegram</span>
+                              </a>
+                            )}
+                            {agent.contact?.owner && (
+                              <span className="flex items-center gap-2 bg-zinc-800/50 px-3 py-1.5 rounded-lg text-xs">
+                                <span className="text-zinc-400">👤</span>
+                                <span className="text-zinc-300">{agent.contact.owner}</span>
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Heartbeat History */}
                       {loadingHistory ? (
                         <div className="text-center py-4 text-zinc-500 text-sm">Loading history...</div>
                       ) : agentHistory.length === 0 ? (
@@ -1020,6 +1087,46 @@ https://gmclaw.xyz`;
             <div className="text-[10px] sm:text-xs text-zinc-500 uppercase tracking-wide">VIEWS</div>
           </div>
         </div>
+
+        {/* Active Agents */}
+        {agentsWithStats.filter(a => a.isActive).length > 0 && (
+          <div className="w-full max-w-2xl px-4 sm:px-0 mb-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold flex items-center gap-2">
+                <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></span>
+                Active Agents
+              </h3>
+              <button onClick={() => navigateTo('agents')} className="text-amber-500 hover:underline text-sm">
+                View all →
+              </button>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {agentsWithStats
+                .filter(a => a.isActive)
+                .slice(0, 10)
+                .map((agent) => (
+                  <button
+                    key={agent._id}
+                    onClick={() => navigateTo('agents')}
+                    className="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800/50 hover:border-green-500/30 rounded-lg px-3 py-2 transition"
+                  >
+                    {agent.pfpUrl ? (
+                      <img src={agent.pfpUrl} alt={agent.name} className="w-6 h-6 rounded-full object-cover" />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center text-green-400 text-xs font-bold">
+                        {agent.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <span className="text-sm font-medium">{agent.name}</span>
+                    {agent.premium && <span className="text-amber-500 text-xs">★</span>}
+                    <span className="text-zinc-500 text-xs">
+                      {agent.lastActivity && formatDistanceToNow(new Date(agent.lastActivity), { addSuffix: true })}
+                    </span>
+                  </button>
+                ))}
+            </div>
+          </div>
+        )}
 
         {/* Recent Activity Preview */}
         {sortedHeartbeats.length > 0 && (
