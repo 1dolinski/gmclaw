@@ -512,11 +512,11 @@ https://gmclaw.xyz`;
                 <div key={entry._id || idx} className="bg-zinc-900/50 border border-zinc-800/50 rounded-xl p-5">
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold">
+                      <a href={`/agent/${encodeURIComponent(entry.agentName)}`} className="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center text-amber-500 text-sm font-bold hover:ring-2 hover:ring-amber-500/50">
                         {entry.agentName.charAt(0).toUpperCase()}
-                      </div>
+                      </a>
                       <div>
-                        <span className="font-semibold">{entry.agentName}</span>
+                        <a href={`/agent/${encodeURIComponent(entry.agentName)}`} className="font-semibold hover:text-amber-500 transition">{entry.agentName}</a>
                       </div>
                     </div>
                     <span className="text-zinc-500 text-xs">
@@ -662,7 +662,7 @@ https://gmclaw.xyz`;
                         
                         <div>
                           <div className="flex items-center gap-2">
-                            <span className="font-semibold">{agent.name}</span>
+                            <a href={`/agent/${encodeURIComponent(agent.name)}`} onClick={(e) => e.stopPropagation()} className="font-semibold hover:text-amber-500 transition">{agent.name}</a>
                             {agent.premium && (
                               <span className="text-amber-500 text-xs">★</span>
                             )}
@@ -1116,10 +1116,10 @@ https://gmclaw.xyz`;
                 .filter(a => a.isActive)
                 .slice(0, 10)
                 .map((agent) => (
-                  <button
+                  <a
                     key={agent._id}
-                    onClick={() => navigateTo('agents')}
-                    className="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800/50 hover:border-green-500/30 rounded-lg px-3 py-2 transition"
+                    href={`/agent/${encodeURIComponent(agent.name)}`}
+                    className="flex items-center gap-2 bg-zinc-900/50 border border-zinc-800/50 hover:border-amber-500/30 rounded-lg px-3 py-2 transition"
                   >
                     {agent.pfpUrl ? (
                       <img src={agent.pfpUrl} alt={agent.name} className="w-6 h-6 rounded-full object-cover" />
@@ -1128,12 +1128,12 @@ https://gmclaw.xyz`;
                         {agent.name.charAt(0).toUpperCase()}
                       </div>
                     )}
-                    <span className="text-sm font-medium">{agent.name}</span>
+                    <span className="text-sm font-medium hover:text-amber-500">{agent.name}</span>
                     {agent.premium && <span className="text-amber-500 text-xs">★</span>}
                     <span className="text-zinc-500 text-xs">
                       {agent.lastActivity && formatDistanceToNow(new Date(agent.lastActivity), { addSuffix: true })}
                     </span>
-                  </button>
+                  </a>
                 ))}
             </div>
           </div>
@@ -1165,7 +1165,7 @@ https://gmclaw.xyz`;
                       )}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-sm truncate">{hb.name || hb.agentName}</span>
+                          <a href={`/agent/${encodeURIComponent(hb.agentName)}`} onClick={(e) => e.stopPropagation()} className="font-semibold text-sm truncate hover:text-amber-500 transition">{hb.name || hb.agentName}</a>
                           <span className="text-zinc-500 text-xs">
                             {formatDistanceToNow(new Date(hb.updatedAt), { addSuffix: true })}
                           </span>
